@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Offline</title>
+<!-- Shown by the app when the driver console can't load. Same tokens as src/app/globals.css. -->
+<style>
+  @font-face { font-family: "Space Grotesk"; src: url(fonts/space-grotesk.woff2) format("woff2"); font-weight: 300 700; }
+  :root { --primary: #fb5b21; --night: #0c0a09; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px 24px; text-align: center; overflow: hidden; position: relative;
+    background: var(--night); color: #fff;
+    font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.005em;
+  }
+  .glow { position: absolute; width: 34rem; height: 34rem; top: -14rem; right: -14rem; border-radius: 50%;
+    background: radial-gradient(circle, rgba(251, 91, 33, 0.24), transparent 65%); pointer-events: none; }
+  .grid { position: absolute; inset: 0; pointer-events: none;
+    background-image: linear-gradient(to right, rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.045) 1px, transparent 1px);
+    background-size: 64px 64px; -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 45%, #000, transparent); mask-image: radial-gradient(ellipse 70% 55% at 50% 45%, #000, transparent); }
+  main { position: relative; display: flex; flex-direction: column; align-items: center; }
+  .mark { width: 64px; height: 64px; border-radius: 18px; background: var(--primary); display: grid; place-items: center;
+    box-shadow: 0 20px 40px -14px rgba(251, 91, 33, 0.55); }
+  .eyebrow { margin-top: 28px; display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px;
+    border-radius: 999px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06);
+    font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+  .eyebrow::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--primary); }
+  h1 { margin-top: 14px; font-size: 30px; line-height: 1.1; font-weight: 700; letter-spacing: -0.035em; }
+  h1 span { color: var(--primary); }
+  p { margin-top: 10px; max-width: 290px; color: rgba(255,255,255,.65); font-size: 15px; line-height: 1.55; }
+  button { margin-top: 28px; height: 48px; padding: 0 28px; border: 0; border-radius: 999px; background: var(--primary);
+    color: #fff; font: 600 14px "Space Grotesk", system-ui, sans-serif; box-shadow: 0 10px 24px -12px rgba(251,91,33,.65);
+    display: inline-flex; align-items: center; gap: 8px; transition: transform .18s cubic-bezier(.22,1,.36,1); }
+  button:active { transform: scale(.97); }
+  .hint { margin-top: 18px; font-size: 12px; color: rgba(255,255,255,.4); }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="grid"></div>
+  <main>
+    <div class="mark">
+      <svg width="42" height="42" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2.2c-4.1 0-7.4 3.2-7.4 7.3 0 5.2 6.1 11.4 6.8 12.1.3.3.9.3 1.2 0 .7-.7 6.8-6.9 6.8-12.1 0-4.1-3.3-7.3-7.4-7.3Z" fill="#fff"/>
+        <g fill="none" stroke="#fb5b21" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="9.6" r="4.1"/><path d="M8.1 8.7c1.2-.4 2.5-.6 3.9-.6s2.7.2 3.9.6M12 10.8v2.8"/></g>
+        <circle cx="12" cy="9.9" r="1.1" fill="#fb5b21"/>
+      </svg>
+    </div>
+    <span class="eyebrow">Driver console</span>
+    <h1>{{TITLE}}</h1>
+    <p>{{MESSAGE}}</p>
+    <button type="button" onclick="SaarathiDriver.retry()">
+      Try again
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+    </button>
+    <p class="hint">We’ll reconnect automatically as soon as you’re back online.</p>
+  </main>
+  <script>
+    window.addEventListener("online", function () { SaarathiDriver.retry(); });
+  </script>
+</body>
+</html>

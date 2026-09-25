@@ -1,0 +1,5 @@
+# Signing key — back it up, never commit it.
+keys/
+build/
+dist/
+driver.env

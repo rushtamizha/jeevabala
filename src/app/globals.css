@@ -1,0 +1,580 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* =========================================================================
+   DESIGN SYSTEM
+   Palette  #FB5B21 · #0A0A0A · #6B6B6B · #E6E6E6 · #F6F6F6, Space Grotesk only.
+
+   Radius — one ladder, one job per step (never mix inside a component):
+     rounded-full  buttons, chips, badges, pills, icon buttons, navbar
+     rounded-xl    12px  inputs, inner tiles, menu rows, icon squares
+     rounded-2xl   16px  cards, panels, dropdowns, popovers
+     rounded-3xl   24px  hero booking card, CTA band, auth card
+
+   Rhythm — every section uses `.section` (44px → 64px block padding) and
+   `container-page` (max 1280px, 16/24/32px gutters). Heading → content = 32px.
+   ========================================================================= */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-space-grotesk), ui-monospace, monospace;
+  --font-heading: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --color-surface: var(--surface);
+  --color-night: var(--night);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-ink: var(--ink);
+  --color-gold: var(--gold);
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --radius-4xl: 32px;
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+  --animate-marquee-reverse: marquee var(--marquee-duration, 40s) linear infinite reverse;
+  --animate-ping-slow: ping-slow 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-pop-in: pop-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-rise-in: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-lift: lift-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-progress: progress var(--progress-duration, 5s) linear both;
+  --animate-spin-slow: spin 18s linear infinite;
+  --animate-grow-x: grow-x 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes marquee {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(calc(-50% - 0.5rem), 0, 0); }
+  }
+  @keyframes ping-slow {
+    75%, 100% { transform: scale(2.2); opacity: 0; }
+  }
+  /* Below-the-fold entrances only: opacity starts at 0. */
+  @keyframes rise-in {
+    from { opacity: 0; transform: translate3d(0, 16px, 0); }
+    to { opacity: 1; transform: none; }
+  }
+  /* LCP-safe: transform only, text is painted at full opacity on frame one. */
+  @keyframes lift-in {
+    from { transform: translate3d(0, 14px, 0); }
+    to { transform: none; }
+  }
+  @keyframes progress {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+  @keyframes grow-x {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+  @keyframes pop-in {
+    0% { opacity: 0; transform: scale(0.6) rotate(-12deg); }
+    60% { opacity: 1; transform: scale(1.08) rotate(4deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
+}
+
+@keyframes check-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes draw-line {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes border-angle {
+  to { --border-angle: 360deg; }
+}
+/* Crossfade cycles: slot = 1/n of the period, 1.2s (slides) / 0.3s (words) fades.
+   Each item is delayed by i·slot − fade, so item 0 is fully visible at t=0. */
+@keyframes slides-2 { 0% { opacity: 0; } 10%, 50% { opacity: 1; } 60%, 100% { opacity: 0; } }
+@keyframes slides-3 { 0% { opacity: 0; } 6.67%, 33.33% { opacity: 1; } 40%, 100% { opacity: 0; } }
+@keyframes slides-4 { 0% { opacity: 0; } 5%, 25% { opacity: 1; } 30%, 100% { opacity: 0; } }
+@keyframes words-3 {
+  0% { opacity: 0; transform: translate3d(0, 0.35em, 0); }
+  4%, 33.33% { opacity: 1; transform: none; }
+  37.33%, 100% { opacity: 0; transform: translate3d(0, -0.35em, 0); }
+}
+@keyframes words-4 {
+  0% { opacity: 0; transform: translate3d(0, 0.35em, 0); }
+  3%, 25% { opacity: 1; transform: none; }
+  28%, 100% { opacity: 0; transform: translate3d(0, -0.35em, 0); }
+}
+@keyframes sheen {
+  from { transform: translateX(-120%) skewX(-18deg); }
+  to { transform: translateX(320%) skewX(-18deg); }
+}
+
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+:root {
+  --radius: 0.75rem;
+  --background: #ffffff;
+  --surface: #f6f6f6;
+  --night: #0c0a09;
+  --foreground: #0a0a0a;
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+  --primary: #fb5b21;
+  --primary-hover: #e84a12;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f4;
+  --secondary-foreground: #0a0a0a;
+  --muted: #f4f4f4;
+  --muted-foreground: #6b6b6b; /* 5.3:1 on white — AA for body copy */
+  --accent: #fff3ed;
+  --accent-foreground: #0a0a0a;
+  --destructive: #e5383b;
+  --border: #e6e6e6;
+  --input: #e6e6e6;
+  --ring: #fb5b21;
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --info: #2f80ed;
+  --ink: #0a0a0a;
+  --gold: #ffb400;
+  --chart-1: #fb5b21;
+  --chart-2: #0a0a0a;
+  --chart-3: #9e9e9e;
+  --chart-4: #fdb59b;
+  --chart-5: #e6e6e6;
+  /* Admin sidebar is always the dark rail (crackers-style console). */
+  --sidebar: #0c0a09;
+  --sidebar-foreground: #b8b3ae;
+  --sidebar-primary: #fb5b21;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgb(255 255 255 / 0.07);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 0.08);
+  --sidebar-ring: #fb5b21;
+  --glow: rgb(251 91 33 / 0.32);
+}
+
+/* Admin-only dark variant of the same palette (public site is light-only). */
+.dark {
+  --background: #0b0b0b;
+  --surface: #121212;
+  --foreground: #f4f4f4;
+  --card: #151515;
+  --card-foreground: #f4f4f4;
+  --popover: #181818;
+  --popover-foreground: #f4f4f4;
+  --primary: #fb5b21;
+  --primary-hover: #ff6d38;
+  --primary-foreground: #ffffff;
+  --secondary: #1f1f1f;
+  --secondary-foreground: #f4f4f4;
+  --muted: #1f1f1f;
+  --muted-foreground: #a3a3a3;
+  --accent: #2a1a13;
+  --accent-foreground: #f4f4f4;
+  --destructive: #ff5a5d;
+  --border: #262626;
+  --input: #303030;
+  --ring: #fb5b21;
+  --success: #34c16f;
+  --success-foreground: #04140a;
+  --warning: #ffc233;
+  --info: #5b9bf0;
+  --gold: #ffc233;
+  --chart-1: #fb5b21;
+  --chart-2: #f4f4f4;
+  --chart-3: #8a8a8a;
+  --chart-4: #fdb59b;
+  --chart-5: #3a3a3a;
+  --sidebar: #070707;
+  --sidebar-border: rgb(255 255 255 / 0.06);
+  --glow: rgb(251 91 33 / 0.35);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "kern", "liga";
+    letter-spacing: -0.005em;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* The brand never uses italics — not even for <em>, <i>, <cite> or <address>. */
+  em, i, cite, address, dfn, var {
+    font-style: normal;
+  }
+  h1, h2, h3, h4 {
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--primary) 24%, transparent);
+  }
+  :focus-visible {
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* One vertical rhythm for every public section. */
+  .section {
+    padding-block: 2.75rem;
+    scroll-margin-top: 5.5rem;
+  }
+  @media (min-width: 1024px) {
+    .section {
+      padding-block: 4rem;
+    }
+  }
+  .section-alt {
+    background: var(--surface);
+  }
+  .section-night {
+    background: var(--night);
+    color: #fff;
+  }
+  /* Two neighbouring sections on the same ground share one gap, never two. */
+  .section:not(.section-alt, .section-night) + .section:not(.section-alt, .section-night),
+  .section-alt + .section-alt,
+  .section-night + .section-night {
+    padding-top: 0;
+  }
+
+  /* Section eyebrow: tiny orange pill with a dot — identical everywhere. */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: 1.625rem;
+    padding-inline: 0.625rem;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--primary) 22%, transparent);
+    background: color-mix(in srgb, var(--primary) 6%, transparent);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 9999px;
+    background: currentColor;
+  }
+  .eyebrow-dark {
+    border-color: rgb(255 255 255 / 0.14);
+    background: rgb(255 255 255 / 0.06);
+    color: #fff;
+  }
+  .eyebrow-dark::before {
+    background: var(--primary);
+  }
+}
+
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 80rem;
+  padding-inline: 1rem;
+  @media (min-width: 640px) {
+    padding-inline: 1.5rem;
+  }
+  @media (min-width: 1024px) {
+    padding-inline: 2rem;
+  }
+}
+
+@layer utilities {
+  /* Headline emphasis: highlighted words are orange (upright, same weight). */
+  .font-display {
+    color: var(--primary);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+  .bg-grid-dark {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+  .mask-fade-x {
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  }
+  .mask-fade-b {
+    mask-image: linear-gradient(to bottom, black 50%, transparent);
+  }
+  .mask-radial {
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+  .bg-screen {
+    background: linear-gradient(to bottom, var(--surface), var(--background) 280px);
+  }
+  .glass {
+    background: color-mix(in srgb, var(--card) 92%, transparent);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+  }
+  /* Elevation — three steps, neutral, never coloured except .shadow-glow. */
+  .shadow-premium {
+    box-shadow: 0 1px 2px rgb(10 10 10 / 0.04), 0 12px 32px -16px rgb(10 10 10 / 0.16);
+  }
+  .shadow-float {
+    box-shadow: 0 1px 2px rgb(10 10 10 / 0.05), 0 24px 60px -24px rgb(10 10 10 / 0.35);
+  }
+  .shadow-glow {
+    box-shadow: 0 10px 24px -12px var(--glow);
+  }
+  .shadow-arc {
+    box-shadow: 0 2px 0 0 var(--primary), 0 6px 14px -6px rgb(10 10 10 / 0.18);
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* =========================================================================
+   MOTION — compositor-only (transform / opacity), no JavaScript.
+   Rules: nothing above the fold ever starts at opacity 0 (LCP stays on the
+   first frame); everything below is progressive enhancement; every effect
+   is switched off by prefers-reduced-motion at the end of this file.
+   ========================================================================= */
+
+/* React Bits "AnimatedContent" — scroll-driven reveal. Browsers without
+   scroll timelines simply show the content in its final state. */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: rise-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 160px;
+  }
+  .reveal-stagger > * {
+    animation: rise-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 200px;
+  }
+}
+
+/* React Bits "StarBorder" — a light travelling around a pill's edge. */
+.star-border {
+  position: relative;
+  isolation: isolate;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--star-bg, var(--primary)), var(--star-bg, var(--primary))) padding-box,
+    conic-gradient(from var(--border-angle), transparent 55%, var(--star-color, #fff) 75%, transparent 90%) border-box;
+  animation: border-angle 4s linear infinite;
+}
+
+/* React Bits "SpotlightCard" — a soft light that follows the pointer. The
+   position vars are set by one delegated listener (SpotlightGroup). */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), var(--spot, rgb(251 91 33 / 0.1)), transparent 45%);
+}
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+/* React Bits "GlareHover" — one sheen pass across a primary button. */
+.sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 35%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.32), transparent);
+  transform: translateX(-120%) skewX(-18deg);
+  pointer-events: none;
+}
+.sheen:hover::after {
+  animation: sheen 0.9s var(--ease-out-quint);
+}
+
+/* React Bits "RotatingText" — words stacked in one grid cell (no layout shift),
+   each fades through its own slot of the cycle. The first word is visible at
+   paint time, so the heading is complete before any animation starts. */
+.rotate-words {
+  display: inline-grid;
+  vertical-align: bottom;
+}
+.rotate-words > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  animation: words-4 10s var(--ease-out-quint) infinite;
+  animation-delay: calc(var(--i) * 2.5s - 0.3s);
+}
+.rotate-words[data-n="3"] > span {
+  animation-name: words-3;
+  animation-duration: 7.5s;
+}
+.rotate-words > span:first-child {
+  opacity: 1;
+}
+
+/* Hero background slides: pure CSS crossfade, first slide painted immediately. */
+.hero-slides:not([data-n="1"]) > .hero-slide {
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: calc(var(--i) * 6s - 1.2s);
+}
+.hero-slides:not([data-n="1"]) > .hero-slide:not(:first-child) {
+  opacity: 0;
+}
+.hero-slides[data-n="2"] > .hero-slide { animation-name: slides-2; animation-duration: 12s; }
+.hero-slides[data-n="3"] > .hero-slide { animation-name: slides-3; animation-duration: 18s; }
+.hero-slides[data-n="4"] > .hero-slide { animation-name: slides-4; animation-duration: 24s; }
+
+/* Native <details> accordion with a height transition where supported. */
+.faq-item::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition: block-size 0.35s var(--ease-out-quint), content-visibility 0.35s allow-discrete;
+}
+.faq-item[open]::details-content {
+  block-size: auto;
+}
+.faq-item > summary {
+  list-style: none;
+}
+.faq-item > summary::-webkit-details-marker {
+  display: none;
+}
+@supports (interpolate-size: allow-keywords) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+}
+
+/* Draws an SVG path once (route lines). Use pathLength="1". */
+.draw-path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-line 1.6s var(--ease-out-quint) 0.3s forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal,
+  .reveal-stagger > * {
+    animation: none !important;
+  }
+  .rotate-words > span:not(:first-child),
+  .hero-slide:not(:first-child) {
+    display: none;
+  }
+  .rotate-words > span:first-child,
+  .hero-slide:first-child {
+    opacity: 1;
+    animation: none !important;
+  }
+  .draw-path {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}

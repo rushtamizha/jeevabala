@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Same tokens as src/app/globals.css -->
+<resources>
+    <color name="brand">#FB5B21</color>
+    <color name="night">#0C0A09</color>
+    <color name="surface">#F6F6F6</color>
+    <color name="card">#FFFFFF</color>
+</resources>
