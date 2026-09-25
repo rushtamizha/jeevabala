@@ -89,10 +89,24 @@ export function env(): Env {
 
 export const isProd = () => process.env.NODE_ENV === "production";
 
+/**
+ * Public base URL. Reads only APP_URL (falling back to Vercel's production
+ * domain), so canonical URLs, robots.txt and the sitemap can be produced during
+ * `next build` before runtime secrets exist. With neither set it defers to
+ * env(), which throws the full, readable configuration error.
+ */
+export function publicBaseUrl(): string {
+  const configured = process.env.APP_URL?.trim();
+  if (configured) return configured.replace(/\/$/, "");
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (vercel) return `https://${vercel}`;
+  return env().APP_URL.replace(/\/$/, "");
+}
+
 export function appOrigin(): string {
-  return new URL(env().APP_URL).origin;
+  return new URL(publicBaseUrl()).origin;
 }
 
 export function absoluteUrl(path: string): string {
-  return new URL(path, env().APP_URL).toString();
+  return new URL(path, publicBaseUrl()).toString();
 }

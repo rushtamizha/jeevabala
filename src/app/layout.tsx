@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Space_Grotesk } from "next/font/google";
 import { headers } from "next/headers";
 import { AppProviders } from "@/components/providers/app-providers";
+import { publicBaseUrl } from "@/lib/server/env";
 import { getSetting } from "@/lib/server/settings";
 import "./globals.css";
 
@@ -12,7 +13,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const name = b?.name ?? "Saarathi Cabs";
   const description =
     b?.tagline ?? "Book a trusted personal driver for outstation, airport and local rides with transparent fares.";
-  const base = process.env.APP_URL ? new URL(process.env.APP_URL) : undefined;
+  let base: URL | undefined;
+  try {
+    base = new URL(publicBaseUrl());
+  } catch {
+    base = undefined; // unconfigured local build — Next falls back to localhost
+  }
   return {
     metadataBase: base,
     title: { default: `${name} — Outstation, Airport & Local Taxi`, template: `%s · ${name}` },

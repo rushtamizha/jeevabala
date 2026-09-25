@@ -9,11 +9,13 @@ import { signPlace } from "@/lib/server/geo";
 import { getBookingConfig } from "@/lib/server/public-data";
 import { TRIP_TYPES, type TripType } from "@/lib/types";
 
-export const metadata: Metadata = {
-  title: "Book a taxi online",
-  description: "Get an instant, itemised taxi fare and book one-way, round trip, airport or local cabs in under a minute. Pay after your ride.",
-  alternates: { canonical: absoluteUrl("/book") },
-};
+export function generateMetadata(): Metadata {
+  return {
+    title: "Book a taxi online",
+    description: "Get an instant, itemised taxi fare and book one-way, round trip, airport or local cabs in under a minute. Pay after your ride.",
+    alternates: { canonical: absoluteUrl("/book") },
+  };
+}
 
 const SLUG = /^[a-z0-9-]{2,60}$/;
 

@@ -2,12 +2,18 @@ import type { MetadataRoute } from "next";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { cities, travelRoutes } from "@/db/schema";
+import { publicBaseUrl } from "@/lib/server/env";
 
 /** Rendered at request time so new city/route pages appear immediately. */
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
+  let base = "http://localhost:3000";
+  try {
+    base = publicBaseUrl();
+  } catch {
+    /* unconfigured local build */
+  }
   const now = new Date();
   const [cityRows, routeRows] = await Promise.all([
     db.select({ slug: cities.slug, updatedAt: cities.updatedAt, featured: cities.isFeatured }).from(cities).where(eq(cities.isActive, true)),
